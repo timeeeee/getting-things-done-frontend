@@ -1,8 +1,16 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 // import { useSelector } from 'react-redux'
 
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
-import { fetchAllInItems, selectInItems } from "./inItemsSlice"
+import { fetchAllInItems, selectInItemByID, selectInItemIDs } from "./inItemsSlice"
+import { AddInItemForm } from './AddInItemForm'
+
+
+export const InItem = ({ id }: { id: string }) => {
+    const inItem = useAppSelector(state => selectInItemByID(state, id))
+
+    return <li>{inItem.description}</li>
+}
 
 
 export const InItemList = () => {
@@ -13,13 +21,17 @@ export const InItemList = () => {
         dispatch(fetchAllInItems())
     }, [dispatch])
 
-    const inItems = useAppSelector(selectInItems)
+    const inItemIDs = useAppSelector(selectInItemIDs)
 
     return (
-        <ul>
-            {Object.values(inItems).map(item =>
-                <li key={item.id}>{item.description}</li>
-            )}
-        </ul>
+        <>
+            <ul>
+                {inItemIDs.map(id =>
+                    <InItem key={id} id={id} />
+                )}
+            </ul>
+
+            <AddInItemForm />
+        </>
     )
 }

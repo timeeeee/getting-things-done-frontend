@@ -3,6 +3,7 @@
 import { createAppSlice } from '../../app/createAppSlice'
 import client from '../../app/api'
 import type { LoadingStatus } from '../../app/types'
+import { InItemList } from './InItemList'
 
 /*
 const fetchInItems = createAsyncThunk(
@@ -27,17 +28,18 @@ const inItemsAdapter = createEntityAdapter({
 })
 */
 
-type InItem = {
+type InItemState = {
     id: string,
     description: string,
-    created_at: string,
-    processed_at: string | null
+    createdAt: string,
+    processedAt?: string,
+    status: LoadingStatus
 }
 
 type InItemsSliceState = {
   ids: string[],
   status: LoadingStatus,
-  inItems: { [key: string]: InItem }
+  inItems: { [key: string]: InItemState }
 }
 
 const initialState: InItemsSliceState = {
@@ -52,7 +54,6 @@ export const inItemsSlice = createAppSlice({
     reducers: create => ({
         fetchAllInItems: create.asyncThunk(
             async () => {
-                console.log("called async thunk")
                 const response = await client.getInItems()
                 return response
             },
@@ -62,18 +63,53 @@ export const inItemsSlice = createAppSlice({
                 },
                 fulfilled: (state, action) => {
                     // replace the ids
-                    state.ids = action.payload.map((inItem: InItem) => inItem.id)
+                    state.ids = action.payload.map((inItem: InItemState) => inItem.id)
                     state.ids.sort()
 
                     // replace the entities
                     state.inItems = {}
-                    action.payload.forEach((inItem: InItem) => state.inItems[inItem.id] = inItem)
-                    
+                    action.payload.forEach((inItem: InItemState) => state.inItems[inItem.id] = {...inItem, status: 'idle'})
+    
                     // set the status
                     state.status = "idle"
                 },
                 rejected: (state: InItemsSliceState) => {
                     state.status = "failed"
+                }
+            }
+        ),
+        updateInItem: create.asyncThunk(
+            async (inItem: InItemState) => {
+                const response = await client.updateInItem(inItem.id, inItem.description, inItem.processedAt)
+                return response
+            }
+        ),
+        createInItem: create.asyncThunk(
+            async (description: string) => {
+                const response = await client.createInItem(description)
+                return response
+            },
+            {
+                pending: state => {
+                    // figure out how to make this optimistic?
+                    // state.status = "loading"
+                },
+                fulfilled: (state, action) => {
+                    const item = action.payload
+
+                    // add to ids
+                    state.ids.push(item.id)
+                    state.ids.sort()
+
+                    // add the entity
+                    state.inItems[item.id] = item
+                    // set the status
+
+                    // confirm on the screen that this item is updated correctly
+                    // ...
+                },
+                rejected: (state: InItemsSliceState) => {
+                    // undo this if the save failed 
                 }
             }
         )
@@ -85,6 +121,6 @@ export const inItemsSlice = createAppSlice({
     }
 })
 
-export const { fetchAllInItems } = inItemsSlice.actions
+export const { fetchAllInItems, createInItem } = inItemsSlice.actions
 
-export const { selectInItems, selectInItemByID } = inItemsSlice.selectors
+export const { selectInItems, selectInItemByID, selectInItemIDs } = inItemsSlice.selectors
