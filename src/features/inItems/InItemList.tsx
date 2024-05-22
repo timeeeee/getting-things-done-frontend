@@ -24,14 +24,14 @@ export const InItemList = () => {
     const inItemIDs = useAppSelector(selectInItemIDs)
 
     return (
-        <>
-            <ul>
+        <div id="in-item-list">
+            <ul id="in-items">
                 {inItemIDs.map(id =>
                     <InItem key={id} id={id} />
                 )}
             </ul>
 
             <AddInItemForm />
-        </>
+        </div>
     )
 }
