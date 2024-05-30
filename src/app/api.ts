@@ -1,12 +1,13 @@
 import camelCaseKeys from "camelcase-keys"
 import snakecaseKeys from "snakecase-keys"
 
-type Method = "GET" | "POST" | "PUT" | "PATCH"
+type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE"
 
 
 /*
 take care of general headers
 convert body to/from snakeCase for the REST API
+if the response is "no content" return null
 */
 const requestAPI = async (path: string, method: Method, data?: Record<string, string>) => {
     const url = `${import.meta.env.VITE_API_URL}${path}`;
@@ -26,14 +27,22 @@ const requestAPI = async (path: string, method: Method, data?: Record<string, st
         config
     )
 
-    const responseData = await response.json();
+    if (!response.ok) {
+        throw new Error(`${response.status}: ${response.statusText}`)
+    }
+
+    // check for "no content"
+    if (response.status === 204) return
+
+    const responseData = await response.json()
     return camelCaseKeys(responseData)
 }
 
 
 const client = {
+    // in items
     getInItems: async () => {
-        return await requestAPI('/in-items', 'GET');
+        return await requestAPI('/in-items', 'GET')
     },
     updateInItem: async (id: string, description: string, processedAt?: string) => {
         return await requestAPI(
@@ -51,6 +60,17 @@ const client = {
             'POST',
             {description}
         )
+    },
+    deleteInItem: async(id: string) => {
+        await requestAPI(
+            `/in-items/${id}`,
+            'DELETE'
+        )
+    },
+    
+    // Projects
+    getProjects: async () => {
+        return await requestAPI('/projects', 'GET')
     }
 }
 

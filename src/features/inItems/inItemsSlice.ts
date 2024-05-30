@@ -1,31 +1,11 @@
-// import { createSlice, createAsyncThunk, createEntityAdapter, PayloadAction } from "@reduxjs/toolkit"
-
 import { createAppSlice } from '../../app/createAppSlice'
 import client from '../../app/api'
 import type { LoadingStatus } from '../../app/types'
-import { InItemList } from './InItemList'
 
 /*
-const fetchInItems = createAsyncThunk(
-    'inItems/fetchInItems',
-    async () => {
-        return await client.getInItems()
-    }
-)
-*/
-
-/*
-const inItemsAdapter = createEntityAdapter({
-    sortComparer: (a, b) => {
-        if (a === b) {
-            return 0
-        } else if (a < b) {
-            return 1
-        } else {
-            return -1
-        }
-    }
-})
+    this slice will
+    - use the asyncThunkCreator to include thunks in the reducers
+    - manually use a normalized state structure
 */
 
 type InItemState = {
@@ -53,9 +33,13 @@ export const inItemsSlice = createAppSlice({
     initialState,
     reducers: create => ({
         fetchAllInItems: create.asyncThunk(
-            async () => {
-                const response = await client.getInItems()
-                return response
+            async (_, { rejectWithValue }) => {
+                try {
+                    const response = await client.getInItems()
+                    return response
+                } catch (error: any) {
+                    return rejectWithValue(error.message)
+                }
             },
             {
                 pending: state => {
@@ -79,20 +63,28 @@ export const inItemsSlice = createAppSlice({
             }
         ),
         updateInItem: create.asyncThunk(
-            async (inItem: InItemState) => {
-                const response = await client.updateInItem(inItem.id, inItem.description, inItem.processedAt)
-                return response
+            async (inItem: InItemState, { rejectWithValue }) => {
+                try {
+                    const response = await client.updateInItem(inItem.id, inItem.description, inItem.processedAt)
+                    return response
+                } catch (error: any) {
+                    return rejectWithValue(error.message)
+                }
             }
         ),
         createInItem: create.asyncThunk(
-            async (description: string) => {
-                const response = await client.createInItem(description)
-                return response
+            async (description: string, { rejectWithValue }) => {
+                try {
+                    const response = await client.createInItem(description)
+                    return response
+                } catch (error: any) {
+                    return rejectWithValue(error.message)
+                }
             },
             {
                 pending: state => {
                     // figure out how to make this optimistic?
-                    // state.status = "loading"
+                    // create draft item with "pending" status?
                 },
                 fulfilled: (state, action) => {
                     const item = action.payload
@@ -112,6 +104,32 @@ export const inItemsSlice = createAppSlice({
                     // undo this if the save failed 
                 }
             }
+        ),
+        deleteInItem: create.asyncThunk(
+            async (id: string, { rejectWithValue }) => {
+                try {
+                    const response = await client.deleteInItem(id)
+                    return response
+                } catch (error: any) {
+                    return rejectWithValue(error.message)
+                }
+            },
+            {
+                pending: (state, action) => {
+                    const id = action.meta.arg
+                    state.inItems[id].status = "loading"
+                },
+                fulfilled: (state, action) => {
+                    const id = action.meta.arg
+                    state.ids = state.ids.filter(item => item !== id)
+                    delete state.inItems[id]
+                },
+                rejected: (state, action) => {
+                    // todo: add error message
+                    const id = action.meta.arg
+                    state.inItems[id].status = "idle"
+                }
+            }
         )
     }),
     selectors: {
@@ -121,6 +139,6 @@ export const inItemsSlice = createAppSlice({
     }
 })
 
-export const { fetchAllInItems, createInItem } = inItemsSlice.actions
+export const { fetchAllInItems, createInItem, deleteInItem } = inItemsSlice.actions
 
 export const { selectInItems, selectInItemByID, selectInItemIDs } = inItemsSlice.selectors

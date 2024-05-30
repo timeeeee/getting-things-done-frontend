@@ -14,10 +14,7 @@ export const AddInItemForm = () => {
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        console.log(`new in item form submitting ${newInItem}`)
-
         dispatch(createInItem(newInItem))
-
         setNewInItem("")
     }
 
