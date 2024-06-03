@@ -18,7 +18,7 @@ export const ProjectList = () => {
     const dispatch = useAppDispatch()
 
     useEffect(() => {
-        dispatch(fetchAllProjects)
+        dispatch(fetchAllProjects())
     }, [])
 
     const projectIds = useAppSelector(selectProjectIds)

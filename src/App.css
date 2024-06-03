@@ -19,3 +19,14 @@ ul#in-items li {
 ul#in-items li button.delete {
   float: right;
 }
+
+nav ul {
+  list-style-type: none;
+  height: 80px;
+}
+
+nav li {
+  float: left;
+  display: block;
+  margin: 20px;
+}
