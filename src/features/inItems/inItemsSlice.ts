@@ -33,13 +33,8 @@ export const inItemsSlice = createAppSlice({
     initialState,
     reducers: create => ({
         fetchAllInItems: create.asyncThunk(
-            async (_, { rejectWithValue }) => {
-                try {
-                    const response = await client.getInItems()
-                    return response
-                } catch (error: any) {
-                    return rejectWithValue(error.message)
-                }
+            async (_) => {
+                return await client.getInItems()
             },
             {
                 pending: state => {
@@ -63,23 +58,13 @@ export const inItemsSlice = createAppSlice({
             }
         ),
         updateInItem: create.asyncThunk(
-            async (inItem: InItemState, { rejectWithValue }) => {
-                try {
-                    const response = await client.updateInItem(inItem.id, inItem.description, inItem.processedAt)
-                    return response
-                } catch (error: any) {
-                    return rejectWithValue(error.message)
-                }
+            async (inItem: InItemState) => {
+                return await client.updateInItem(inItem.id, inItem.description, inItem.processedAt)
             }
         ),
         createInItem: create.asyncThunk(
-            async (description: string, { rejectWithValue }) => {
-                try {
-                    const response = await client.createInItem(description)
-                    return response
-                } catch (error: any) {
-                    return rejectWithValue(error.message)
-                }
+            async (description: string) => {
+               return await client.createInItem(description)
             },
             {
                 pending: state => {
@@ -106,13 +91,8 @@ export const inItemsSlice = createAppSlice({
             }
         ),
         deleteInItem: create.asyncThunk(
-            async (id: string, { rejectWithValue }) => {
-                try {
-                    const response = await client.deleteInItem(id)
-                    return response
-                } catch (error: any) {
-                    return rejectWithValue(error.message)
-                }
+            async (id: string) => {
+                return await client.deleteInItem(id)
             },
             {
                 pending: (state, action) => {
