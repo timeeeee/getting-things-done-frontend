@@ -1,6 +1,9 @@
 import camelCaseKeys from "camelcase-keys"
 import snakecaseKeys from "snakecase-keys"
 
+import type { Bucket } from "./types"
+import { ProjectConfig } from "vitest"
+
 type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE"
 
 
@@ -71,6 +74,31 @@ const client = {
     // Projects
     getProjects: async () => {
         return await requestAPI('/projects', 'GET')
+    },
+    createProject: async (
+        name: string,
+        notes: string,
+        bucket: Bucket,
+        nextStep: string
+    ) => {
+        return await requestAPI(
+            '/projects',
+            'POST',
+            { name, notes, bucket, nextStep }
+        )
+    },
+    updateProject: async (id: string, name: string, notes: string, bucket: Bucket, nextStep: string) => {
+        return await requestAPI(
+            `/projects/${id}`,
+            'PUT',
+            {name, notes, bucket, nextStep}
+        )
+    },
+    deleteProject: async(id: string) => {
+        await requestAPI(
+            `/projects/${id}`,
+            'DELETE'
+        )
     }
 }
 

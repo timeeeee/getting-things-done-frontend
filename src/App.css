@@ -1,3 +1,8 @@
+body {
+  background-color: #eee;
+  color: #111;
+}
+
 .App {
   margin: 40px;
   width: 60%;
@@ -29,4 +34,29 @@ nav li {
   float: left;
   display: block;
   margin: 20px;
+}
+
+ul#project-list {
+  li {
+    list-style-type: none;
+    margin-top: 20px;
+  }
+}
+
+.project-edit-form {
+  padding: 10px;
+  border-style: solid;
+  border-width: 1px;
+
+  input[name=name] {
+    display: block;
+  }
+
+  input[name=notes] {
+    display: block;
+  }
+
+  button.delete {
+    float: right;
+  }
 }
