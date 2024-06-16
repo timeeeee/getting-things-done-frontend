@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import {
   createBrowserRouter,
   RouterProvider,
@@ -6,10 +7,20 @@ import {
 } from "react-router-dom"
 
 import "./App.css"
+import { useAppDispatch } from "./app/hooks"
 import { InItemList } from "./features/inItems/InItemList"
 import { ProjectList } from "./features/projects/ProjectList"
+import { fetchAllInItems } from "./features/inItems/inItemsSlice"
+import { fetchAllProjects } from "./features/projects/projectsSlice"
 
 const Layout = () => {
+  // initial load of data from the API
+  const dispatch = useAppDispatch()
+  useEffect(() => {
+    dispatch(fetchAllInItems({}))
+    dispatch(fetchAllProjects())
+  }, [])
+
   return (
     <>
       <nav>
@@ -22,6 +33,7 @@ const Layout = () => {
     </>
   )
 }
+
 
 const router = createBrowserRouter([
   {

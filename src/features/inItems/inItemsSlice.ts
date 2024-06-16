@@ -33,7 +33,7 @@ export const inItemsSlice = createAppSlice({
     initialState,
     reducers: create => ({
         fetchAllInItems: create.asyncThunk(
-            async (_) => {
+            async () => {
                 return await client.getInItems()
             },
             {

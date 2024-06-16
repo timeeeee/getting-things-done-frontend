@@ -1,8 +1,7 @@
-import { useEffect } from 'react'
-
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
-import { fetchAllInItems, deleteInItem, selectInItemByID, selectInItemIDs } from "./inItemsSlice"
+import { deleteInItem, selectInItemByID, selectInItemIDs } from "./inItemsSlice"
 import { AddInItemForm } from './AddInItemForm'
+import { LoadingSpinner } from '../../common/LoadingSpinner'
 
 
 export const InItem = ({ inItemId }: { inItemId: string }) => {
@@ -21,10 +20,12 @@ export const InItem = ({ inItemId }: { inItemId: string }) => {
 export const InItemList = () => {
     const dispatch = useAppDispatch()
 
+    /*
+    // doing this in App now
     useEffect(() => {
-        // todo: can fetchAllInItems be called with no arguments in a way that satisfied typescript?
         dispatch(fetchAllInItems({}))
     }, [dispatch])
+    */
 
     const inItemIDs = useAppSelector(selectInItemIDs)
 
