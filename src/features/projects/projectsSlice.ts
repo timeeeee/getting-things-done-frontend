@@ -1,4 +1,4 @@
-import { createAsyncThunk, createEntityAdapter, type EntityId } from "@reduxjs/toolkit"
+import { createAsyncThunk, createEntityAdapter, type EntityId, type SerializedError } from "@reduxjs/toolkit"
 
 import { createAppSlice } from '../../app/createAppSlice'
 import client from '../../app/api'
@@ -25,13 +25,14 @@ export type ProjectState = ProjectData & {
     id: EntityId,
     created_at?: string,
     updated_at?: string,
-    status: LoadingStatus
+    status: LoadingStatus,
+    error?: string
 }
 
 const projectAdapter = createEntityAdapter<ProjectState>()
 
 export const fetchAllProjects = createAsyncThunk(
-    'projects/fetchProjects',
+    'projects/fetchAllProjects',
     async (_) => {
         return await client.getProjects()
     }
@@ -70,7 +71,13 @@ export const deleteProject = createAsyncThunk(
     }
 )
 
-const initialLoadingState: {loading: LoadingStatus} = {loading: "idle"}
+const initialLoadingState: {
+    loading: LoadingStatus,
+    error?: string | undefined,
+    pendingNewProject?: ProjectData & {loading: LoadingStatus, error?: string | undefined }
+} = {
+    loading: "idle",
+}
 
 export const projectsSlice = createAppSlice({
     name: "projects",
@@ -88,25 +95,31 @@ export const projectsSlice = createAppSlice({
 
         builder.addCase(fetchAllProjects.rejected, (state, action) => {
             state.loading = "failed"
+            const payload = action.payload as SerializedError
+            state.error = payload.message
         })
 
         builder.addCase(createProject.pending, (state, action) => {
-            // action.meta.arg will tell me the ProjectData but not the id
-            // ... because the back-end hasn't made one yet lolol
-            // figure out how to set this optimistically here
+            state.pendingNewProject = action.payload
         })
 
         builder.addCase(createProject.fulfilled, (state, action) => {
             projectAdapter.addOne(state, action.payload)
-            // todo: set the new project status to idle
+            delete state.pendingNewProject
         })
 
         builder.addCase(createProject.rejected, (state, action) => {
-            // todo: put a message on the screen that saving this failed
+            const error = action.payload as SerializedError
+            // *I* know state.pendingNewProject is defined here because it was defined in the pending action
+            // How would I indicate this to typescript?
+            // state.pendingNewProject = {...state.pendingNewProject, error: error.message}
+            if (state.pendingNewProject !== undefined) {
+                state.pendingNewProject.loading = "failed"
+                state.pendingNewProject.error = error.message
+            }
         })
 
         builder.addCase(updateProject.pending, (state, action) => {
-            console.log("update project pending")
             state.entities[action.meta.arg.id].status = "loading"
         })
 
@@ -116,7 +129,7 @@ export const projectsSlice = createAppSlice({
         })
 
         builder.addCase(updateProject.rejected, (state, action) => {
-
+            state.entities[action.meta.arg.id].status = "failed"
         })
 
         builder.addCase(deleteProject.pending, (state, action) => {
@@ -125,14 +138,14 @@ export const projectsSlice = createAppSlice({
 
         builder.addCase(deleteProject.fulfilled, (state, action) => {
             projectAdapter.removeOne(state, action.meta.arg)
+            state.entities[action.meta.arg].status = "idle"
         })
 
         builder.addCase(deleteProject.rejected, (state, action) => {
-            
+            state.entities[action.meta.arg].status = "failed"
         })
     }
 })
-
 
 export const {
     selectIds: selectProjectIds,
