@@ -12,6 +12,7 @@ import { InItemList } from "./features/inItems/InItemList"
 import { ProjectList } from "./features/projects/ProjectList"
 import { fetchAllInItems } from "./features/inItems/inItemsSlice"
 import { fetchAllProjects } from "./features/projects/projectsSlice"
+import { ProjectDetailPage } from "./features/projects/Project"
 
 const Layout = () => {
   // initial load of data from the API
@@ -49,6 +50,10 @@ const router = createBrowserRouter([
       {
         path: "/projects",
         element: <ProjectList />
+      },
+      {
+        path: "/projects/:id",
+        element: <ProjectDetailPage />
       }    
     ]
   },
