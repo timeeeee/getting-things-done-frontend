@@ -1,10 +1,12 @@
 // todo: get generic type RouteComponentProps from react-router-dom (or @types?)    
-import { Link, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import type { EntityId } from "@reduxjs/toolkit"
+import { useReducer } from "react"
 
-import { useAppSelector } from "../../app/hooks"
-import { selectProjectById, type ProjectState } from "./projectsSlice"
+import { useAppSelector, useAppDispatch } from "../../app/hooks"
+import { selectProjectById, updateProject, type ProjectData } from "./projectsSlice"
 import { LoadingSpinner } from "../../common/LoadingSpinner"
+import { ProjectForm } from "./ProjectForm"
 
 type ProjectRouteParams = {
     id: string
@@ -18,7 +20,18 @@ export const ProjectDetailPage = () => {
 
 
 export const Project = ({ projectId } : {projectId: EntityId}) => {
-    const project: ProjectState = useAppSelector(state => selectProjectById(state, projectId))
+    const dispatch = useAppDispatch()
+
+    const project = useAppSelector(state => selectProjectById(state, projectId))
+
+    const [isEditing, toggleEditMode] = useReducer(state => !state, false)
+
+    const handleSave = (data: ProjectData) => {
+        dispatch(updateProject({...project, ...data}))
+        toggleEditMode()
+    }
+
+    if (isEditing) return <ProjectForm initialData={project} onSave={handleSave} onCancel={toggleEditMode} />
 
     return (
         <div className="project">
@@ -33,7 +46,7 @@ export const Project = ({ projectId } : {projectId: EntityId}) => {
                 <h3>Notes:</h3>
                 <div>{project.notes}</div>
             </div>        
-            <Link to={`/projects/${projectId}/edit`}>Edit</Link>
+            <button onClick={toggleEditMode}>Edit</button>
         </div>
     )
 }

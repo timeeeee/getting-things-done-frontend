@@ -3,6 +3,7 @@ import { Link } from "react-router-dom"
 import type { EntityId } from "@reduxjs/toolkit"
 
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
+import type { LoadingStatus } from "../../app/types"
 import {
     selectProjectIds,
     selectProjectById,
@@ -13,21 +14,21 @@ import { ProjectForm } from "./ProjectForm"
 import { LoadingSpinner } from "../../common/LoadingSpinner"
 
 
-const ProjectPreviewBody = ({ project }: {project: ProjectData}) => {
+const ProjectPreviewBody = ({ id, projectData, error, status }: {id?: EntityId, projectData: ProjectData, status?: LoadingStatus, error?: string }) => {
     return (
         <div className="project-preview">
-            {project.status === "loading" && <LoadingSpinner />}
+            {status === "loading" && <LoadingSpinner />}
             <div className="title">
-                <Link to={`/projects/${project.id}`}>
-                    <span id="project-title"><h2>{project.name}</h2></span>
-                <span id="project-bucket">({project.bucket})</span>
+                <Link to={`/projects/${id}`}>
+                    <span id="project-title"><h2>{projectData.name}</h2></span>
+                <span id="project-bucket">({projectData.bucket})</span>
                 </Link>
             </div>
-            {project.error !== undefined && <div className="error">{project.error}</div>}
-            <div className="next-step"><strong>Next step: {project.nextStep}</strong></div>
+            {error !== undefined && <div className="error">{error}</div>}
+            <div className="next-step"><strong>Next step: {projectData.nextStep}</strong></div>
             <div className="project-notes">
                 <h3>Notes:</h3>
-                <div>{project.notes}</div>
+                <div>{projectData.notes}</div>
             </div>
         </div>
     )
@@ -36,7 +37,7 @@ const ProjectPreviewBody = ({ project }: {project: ProjectData}) => {
 const ProjectPreview = ({ projectId }: {projectId: EntityId}) => {
     const project = useAppSelector(state => selectProjectById(state, projectId))
 
-    return <ProjectPreviewBody project={project} />
+    return <ProjectPreviewBody id={projectId} projectData={project} error={project.error} status={project.status} />
 }
 
 export const ProjectList = () => {
@@ -65,7 +66,7 @@ export const ProjectList = () => {
                 : <button onClick={toggleNewProjectDialog}>Create Project</button>
             }
             <ul id="project-list">
-                {pendingProject !== undefined && <li key="pending"><ProjectPreviewBody project={pendingProject} /></li>}
+                {pendingProject !== undefined && <li key="pending"><ProjectPreviewBody projectData={pendingProject} /></li>}
                 {projectIds.map((id) =>
                     <li key={id}>
                         <ProjectPreview projectId={id} />
