@@ -31,7 +31,7 @@ const Layout = () => {
   }, [])
 
   return (
-    <MantineProvider theme={theme}>
+    <>
       <nav>
         <ul>
           <li><Link to="in-items">In Items</Link></li>
@@ -39,7 +39,7 @@ const Layout = () => {
         </ul>
       </nav>
       <Outlet />
-      </MantineProvider>
+    </>
   )
 }
 
@@ -69,9 +69,11 @@ const router = createBrowserRouter([
 
 const App = () => {
   return (
-    <div className="App">
-      <RouterProvider router={router} />
-    </div>
+    <MantineProvider theme={theme}>
+      <div className="App">
+        <RouterProvider router={router} />
+      </div>
+    </MantineProvider>
   )
 }
 
