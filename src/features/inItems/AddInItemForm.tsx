@@ -4,7 +4,7 @@ import { Button } from "@mantine/core"
 import { useAppDispatch } from "../../app/hooks"
 import { createInItem } from "./inItemsSlice"
 
-export const AddInItemForm = () => {
+export const AddInItemForm = ({ disabled = false }) => {
     const dispatch = useAppDispatch()
 
     const [ newInItem, setNewInItem ] = useState("")
@@ -27,8 +27,9 @@ export const AddInItemForm = () => {
                 placeholder="what to do?"
                 onChange={handleInput}
                 value={newInItem}
+                disabled={disabled}
             />
-            <Button type="submit">submit</Button>
+            <Button type="submit" disabled={disabled} size="compact-md">submit</Button>
         </form>
     )
 }

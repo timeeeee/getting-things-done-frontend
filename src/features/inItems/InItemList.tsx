@@ -1,9 +1,8 @@
-import { Button } from "@mantine/core"
+import { Button, Loader } from "@mantine/core"
 
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import { deleteInItem, selectInItemByID, selectInItemIDs } from "./inItemsSlice"
 import { AddInItemForm } from './AddInItemForm'
-import { LoadingSpinner } from '../../common/LoadingSpinner'
 
 
 export const InItem = ({ inItemId }: { inItemId: string }) => {
@@ -14,7 +13,7 @@ export const InItem = ({ inItemId }: { inItemId: string }) => {
 
     return <li className="in-item">
         <span>{inItem.description}</span>
-        <Button className="delete" onClick={handleDelete}>🗑</Button>
+        <Button className="delete" onClick={handleDelete} size="compact-md">🗑</Button>
     </li>
 }
 
@@ -29,6 +28,15 @@ export const InItemList = () => {
     */
 
     const inItemIDs = useAppSelector(selectInItemIDs)
+    const loadingStatus = useAppSelector(state => state.inItems.status)
+
+    // todo: add disabled input form to this
+    if (loadingStatus === "loading") return (
+        <div id="in-item-list">
+            <AddInItemForm disabled />
+            <Loader />
+        </div>
+    )
 
     return (
         <div id="in-item-list">

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom"
 import type { EntityId } from "@reduxjs/toolkit"
 import { useDisclosure } from '@mantine/hooks';
-import { Modal, Tabs, Button } from '@mantine/core';
+import { Modal, Tabs, Button, Loader } from '@mantine/core';
 import { useState } from 'react'
 
 import type { Bucket } from "../../app/types"
@@ -14,13 +14,12 @@ import {
     type ProjectData
 } from "./projectsSlice"
 import { ProjectForm } from "./ProjectForm"
-import { LoadingSpinner } from "../../common/LoadingSpinner"
 
 
 const ProjectPreviewBody = ({ id, projectData, error, status }: {id?: EntityId, projectData: ProjectData, status?: LoadingStatus, error?: string }) => {
     return (
         <div className="project-preview">
-            {status === "loading" && <LoadingSpinner />}
+            {status === "loading" && <Loader />}
             <div className="title">
                 <Link to={`/projects/${id}`}>
                     <span id="project-title"><h2>{projectData.name}</h2></span>
@@ -93,7 +92,7 @@ export const ProjectList = () => {
         closeNewProjectDialog()
     }
 
-    if (loadingStatus === "loading") return <LoadingSpinner />
+    if (loadingStatus === "loading") return <Loader />
 
     if (loadingStatus === "failed") return <div className="error">Failed to fetch projects: {error}</div>
 

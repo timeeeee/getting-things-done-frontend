@@ -2,11 +2,10 @@
 import { useParams } from "react-router-dom"
 import type { EntityId } from "@reduxjs/toolkit"
 import { useDisclosure } from "@mantine/hooks"
-import { Modal, Button } from "@mantine/core"
+import { Modal, Button, Loader } from "@mantine/core"
 
 import { useAppSelector, useAppDispatch } from "../../app/hooks"
 import { selectProjectById, updateProject, type ProjectData } from "./projectsSlice"
-import { LoadingSpinner } from "../../common/LoadingSpinner"
 import { ProjectForm } from "./ProjectForm"
 
 type ProjectRouteParams = {
@@ -38,7 +37,7 @@ export const Project = ({ projectId } : {projectId: EntityId}) => {
                 <ProjectForm initialData={project} onSave={handleSave} />
             </Modal>
 
-            {project.status === "loading" && <LoadingSpinner />}
+            {project.status === "loading" && <Loader />}
             <div className="title">
                 <span id="project-title"><h2>{project.name}</h2></span>
                 <span id="project-bucket">({project.bucket})</span>
