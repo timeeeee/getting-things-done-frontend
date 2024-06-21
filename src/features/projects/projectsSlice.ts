@@ -53,7 +53,6 @@ export const createProject = createAsyncThunk(
 export const updateProject = createAsyncThunk(
     'projects/updateProject',
     async (project: ProjectState) => {
-        console.log("running async update project function")
         return await client.updateProject(
             project.id as string,
             project.name,
@@ -144,6 +143,11 @@ export const projectsSlice = createAppSlice({
         builder.addCase(deleteProject.rejected, (state, action) => {
             state.entities[action.meta.arg].status = "failed"
         })
+    },
+    selectors: {
+        selectProjectIdsByBucket: (state, bucket: Bucket) => {
+            return state.ids.filter(id => state.entities[id].bucket === bucket)
+        }
     }
 })
 
@@ -151,3 +155,5 @@ export const {
     selectIds: selectProjectIds,
     selectById: selectProjectById,
 } = projectAdapter.getSelectors((state: RootState) => state.projects)
+
+export const { selectProjectIdsByBucket } = projectsSlice.selectors
