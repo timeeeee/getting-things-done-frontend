@@ -5,6 +5,8 @@ import {
   Outlet,
   Link
 } from "react-router-dom"
+import '@mantine/core/styles.css'
+import { createTheme, MantineProvider } from '@mantine/core'
 
 import "./App.css"
 import { useAppDispatch } from "./app/hooks"
@@ -13,6 +15,12 @@ import { ProjectList } from "./features/projects/ProjectList"
 import { fetchAllInItems } from "./features/inItems/inItemsSlice"
 import { fetchAllProjects } from "./features/projects/projectsSlice"
 import { ProjectDetailPage } from "./features/projects/Project"
+
+
+
+const theme = createTheme({
+  /** Put your mantine theme override here */
+});
 
 const Layout = () => {
   // initial load of data from the API
@@ -23,7 +31,7 @@ const Layout = () => {
   }, [])
 
   return (
-    <>
+    <MantineProvider theme={theme}>
       <nav>
         <ul>
           <li><Link to="in-items">In Items</Link></li>
@@ -31,7 +39,7 @@ const Layout = () => {
         </ul>
       </nav>
       <Outlet />
-    </>
+      </MantineProvider>
   )
 }
 
