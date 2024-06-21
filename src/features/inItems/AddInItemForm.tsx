@@ -1,4 +1,5 @@
 import { type ChangeEvent, type FormEvent, useState } from 'react'
+import { Button } from "@mantine/core"
 
 import { useAppDispatch } from "../../app/hooks"
 import { createInItem } from "./inItemsSlice"
@@ -27,7 +28,7 @@ export const AddInItemForm = () => {
                 onChange={handleInput}
                 value={newInItem}
             />
-            <button type="submit">submit</button>
+            <Button type="submit">submit</Button>
         </form>
     )
 }

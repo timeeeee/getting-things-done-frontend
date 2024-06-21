@@ -2,7 +2,7 @@
 import { useParams } from "react-router-dom"
 import type { EntityId } from "@reduxjs/toolkit"
 import { useDisclosure } from "@mantine/hooks"
-import { Modal } from "@mantine/core"
+import { Modal, Button } from "@mantine/core"
 
 import { useAppSelector, useAppDispatch } from "../../app/hooks"
 import { selectProjectById, updateProject, type ProjectData } from "./projectsSlice"
@@ -49,7 +49,7 @@ export const Project = ({ projectId } : {projectId: EntityId}) => {
                 <h3>Notes:</h3>
                 <div>{project.notes}</div>
             </div>        
-            <button onClick={startEditing}>Edit</button>
+            <Button onClick={startEditing}>Edit</Button>
         </div>
     )
 }

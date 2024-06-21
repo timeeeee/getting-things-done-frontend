@@ -1,3 +1,5 @@
+import { Button } from "@mantine/core"
+
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import { deleteInItem, selectInItemByID, selectInItemIDs } from "./inItemsSlice"
 import { AddInItemForm } from './AddInItemForm'
@@ -12,16 +14,15 @@ export const InItem = ({ inItemId }: { inItemId: string }) => {
 
     return <li className="in-item">
         <span>{inItem.description}</span>
-        <button className="delete" onClick={handleDelete}>🗑</button>
+        <Button className="delete" onClick={handleDelete}>🗑</Button>
     </li>
 }
 
 
 export const InItemList = () => {
-    const dispatch = useAppDispatch()
-
     /*
     // doing this in App now
+    const dispatch = useAppDispatch()
     useEffect(() => {
         dispatch(fetchAllInItems({}))
     }, [dispatch])

@@ -1,4 +1,5 @@
 import type { EntityId } from '@reduxjs/toolkit'
+import { Button } from "@mantine/core"
 
 import { useState, type ChangeEvent, type FormEvent } from "react"
 import type { ProjectData } from "./projectsSlice"
@@ -46,7 +47,7 @@ export const ProjectForm = ({
                 <label htmlFor="next-step">Next Step:</label>
                 <input type="text" name="next-step" value={nextStep} onChange={handleNextStepChange} />
             </div>
-            <button type="submit">Save</button>
+            <Button type="submit">Save</Button>
         </form>
     )
 }

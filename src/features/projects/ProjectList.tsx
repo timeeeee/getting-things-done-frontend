@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom"
 import type { EntityId } from "@reduxjs/toolkit"
 import { useDisclosure } from '@mantine/hooks';
-import { Modal, Tabs } from '@mantine/core';
+import { Modal, Tabs, Button } from '@mantine/core';
 import { useState } from 'react'
 
 import type { Bucket } from "../../app/types"
@@ -101,7 +101,7 @@ export const ProjectList = () => {
     // todo: use router history state to remember which bucket we're on
     if (loadingStatus === "idle") return (
         <>
-            <button onClick={openNewProjectDialog}>Create Project</button>
+            <Button onClick={openNewProjectDialog}>Create Project</Button>
             <Modal opened={isNewProjectDialogOpen} onClose={closeNewProjectDialog} title="New Project">
                 <ProjectForm onSave={handleSave} />
             </Modal>
