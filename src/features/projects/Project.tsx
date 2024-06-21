@@ -1,7 +1,8 @@
 // todo: get generic type RouteComponentProps from react-router-dom (or @types?)    
 import { useParams } from "react-router-dom"
 import type { EntityId } from "@reduxjs/toolkit"
-import { useReducer } from "react"
+import { useDisclosure } from "@mantine/hooks"
+import { Modal } from "@mantine/core"
 
 import { useAppSelector, useAppDispatch } from "../../app/hooks"
 import { selectProjectById, updateProject, type ProjectData } from "./projectsSlice"
@@ -24,17 +25,19 @@ export const Project = ({ projectId } : {projectId: EntityId}) => {
 
     const project = useAppSelector(state => selectProjectById(state, projectId))
 
-    const [isEditing, toggleEditMode] = useReducer(state => !state, false)
+    const [isEditing, { open: startEditing, close: stopEditing }] = useDisclosure()
 
     const handleSave = (data: ProjectData) => {
         dispatch(updateProject({...project, ...data}))
-        toggleEditMode()
+        stopEditing()
     }
-
-    if (isEditing) return <ProjectForm initialData={project} onSave={handleSave} onCancel={toggleEditMode} />
 
     return (
         <div className="project">
+            <Modal opened={isEditing} onClose={stopEditing} title="Edit Project">
+                <ProjectForm initialData={project} onSave={handleSave} />
+            </Modal>
+
             {project.status === "loading" && <LoadingSpinner />}
             <div className="title">
                 <span id="project-title"><h2>{project.name}</h2></span>
@@ -46,7 +49,7 @@ export const Project = ({ projectId } : {projectId: EntityId}) => {
                 <h3>Notes:</h3>
                 <div>{project.notes}</div>
             </div>        
-            <button onClick={toggleEditMode}>Edit</button>
+            <button onClick={startEditing}>Edit</button>
         </div>
     )
 }

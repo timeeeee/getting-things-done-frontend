@@ -6,12 +6,11 @@ import { type Bucket } from "../../app/types"
 
 
 export const ProjectForm = ({
-    projectId, initialData, onSave, onCancel
+    projectId, initialData, onSave
 }: {
     projectId?: EntityId,
     initialData?: ProjectData,
     onSave: (data: ProjectData) => void,
-    onCancel: () => void
 }) => {
     const project: ProjectData = initialData === undefined ? {name: "", notes: "", bucket: "active", nextStep: ""} : initialData
     const [ name, setName ] = useState(project.name ? project.name : "")
@@ -48,7 +47,6 @@ export const ProjectForm = ({
                 <input type="text" name="next-step" value={nextStep} onChange={handleNextStepChange} />
             </div>
             <button type="submit">Save</button>
-            <button onClick={onCancel}>Cancel</button>
         </form>
     )
 }

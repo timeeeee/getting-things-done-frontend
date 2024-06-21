@@ -1,6 +1,7 @@
-import { useReducer } from "react"
 import { Link } from "react-router-dom"
 import type { EntityId } from "@reduxjs/toolkit"
+import { useDisclosure } from '@mantine/hooks';
+import { Modal, Button } from '@mantine/core';
 
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import type { LoadingStatus } from "../../app/types"
@@ -48,11 +49,11 @@ export const ProjectList = () => {
     const error = useAppSelector(state => state.projects.error)
     const pendingProject = useAppSelector(state => state.projects.pendingNewProject)
 
-    const [isNewProjectDialogOpen, toggleNewProjectDialog] = useReducer(state => !state, false)
+    const [isNewProjectDialogOpen, { open: openNewProjectDialog, close: closeNewProjectDialog }] = useDisclosure()
 
     const handleSave = (projectData: ProjectData) => {
         dispatch(createProject(projectData))
-        toggleNewProjectDialog()
+        closeNewProjectDialog()
     }
 
     if (loadingStatus === "loading") return <LoadingSpinner />
@@ -61,10 +62,11 @@ export const ProjectList = () => {
 
     if (loadingStatus === "idle") return (
         <>
-            {isNewProjectDialogOpen ?
-                <ProjectForm onSave={handleSave} onCancel={toggleNewProjectDialog} />
-                : <button onClick={toggleNewProjectDialog}>Create Project</button>
-            }
+            <button onClick={openNewProjectDialog}>Create Project</button>
+            <Modal opened={isNewProjectDialogOpen} onClose={closeNewProjectDialog} title="New Project">
+                <ProjectForm onSave={handleSave} />
+            </Modal>
+            
             <ul id="project-list">
                 {pendingProject !== undefined && <li key="pending"><ProjectPreviewBody projectData={pendingProject} /></li>}
                 {projectIds.map((id) =>
